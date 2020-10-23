@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_marginStart="20sp"
+    android:layout_marginEnd="20sp"
+    android:layout_height="match_parent"
+    tools:context=".fragment.HomeFragment"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:weightSum="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:fontFamily="@font/sb"
+            android:layout_weight="0.9"
+            android:textSize="30sp"
+            android:text="Favorite Song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/buttonfavmore"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="@font/medium"
+            android:textColor="@color/colortext"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:background="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SeeAll"
+            />
+        <ImageButton
+            android:id="@+id/favmore"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            />
+
+
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvfavoritesong"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+    <LinearLayout
+        android:weightSum="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:fontFamily="@font/sb"
+            android:layout_weight="0.9"
+            android:textSize="30sp"
+            android:text="Popular Song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/buttonpopularmore"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="@font/medium"
+            android:textColor="@color/colortext"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:background="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SeeAll"
+            />
+        <ImageButton
+            android:id="@+id/popularmore"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            />
+
+
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvpopularsong"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+
+
+
+    <LinearLayout
+        android:weightSum="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:fontFamily="@font/sb"
+            android:layout_weight="0.9"
+            android:textSize="30sp"
+            android:text="Trending"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/buttontrendingmore"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="@font/medium"
+            android:textColor="@color/colortext"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:background="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SeeAll"
+            />
+        <ImageButton
+            android:id="@+id/trendingmore"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            />
+
+
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvtrendingsong"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

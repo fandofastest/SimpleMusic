@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16sp"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/songimage"
+        android:src="@drawable/itemsong"
+        android:scaleType="fitCenter"
+        app:riv_corner_radius="10sp"
+        app:riv_oval="true"
+        app:riv_border_color="#333333"
+        app:riv_mutate_background="true"
+        android:layout_height="92sp"
+        android:layout_width="92sp" />
+
+    <TextView
+        android:id="@+id/title"
+        android:textColor="#737373"
+        android:textSize="12sp"
+        android:fontFamily="@font/light"
+        android:textAlignment="center"
+        android:width="92sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Money On My..."
+        />
+
+    <TextView
+        android:id="@+id/artist"
+        android:textColor="#979797"
+        android:textSize="10sp"
+        android:fontFamily="@font/thin"
+        android:textAlignment="center"
+        android:width="92sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sam Smitch"
+        />
+</LinearLayout>
