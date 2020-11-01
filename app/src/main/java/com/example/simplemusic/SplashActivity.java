@@ -67,7 +67,6 @@ public class SplashActivity extends AppCompatActivity {
                 Config.statusapp=response.getString("statusapp");
                 Config.appupdate=response.getString("appupdate");
                 Config.primaryads=response.getString("primaryads");
-                Config.statususer=response.getString("statususer");
 
                 if (Config.statusapp.equals("suspend")){
                     showDialog(Config.appupdate);
