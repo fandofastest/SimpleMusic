@@ -35,8 +35,6 @@ import java.util.Date;
 
 public class Tools  {
     public static int  DURATION = 1;
-    public static String KEYSC;
-    public static String SERVERMUSIC="https://fando.id/soundcloud/get.php?id=";
 
 
     public static void setSystemBarColor(Activity act) {

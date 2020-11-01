@@ -1,11 +1,30 @@
 package com.example.simplemusic.model;
 
-public class ModelSong {
-    String title,album,artist;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-    public ModelSong(String title, String artist) {
-        this.title=title;
-        this.artist=artist;
+public class ModelSong extends RealmObject {
+    @PrimaryKey
+    private Integer id;
+    private String title,songurl,imageurl,duration,artist,type,fav,recent;
+
+    public ModelSong() {
+    }
+
+    public String getSongurl() {
+        return songurl;
+    }
+
+    public void setSongurl(String songurl) {
+        this.songurl = songurl;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -16,12 +35,20 @@ public class ModelSong {
         this.title = title;
     }
 
-    public String getAlbum() {
-        return album;
+    public String getImageurl() {
+        return imageurl;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
+    public void setImageurl(String imageurl) {
+        this.imageurl = imageurl;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public String getArtist() {
@@ -30,5 +57,29 @@ public class ModelSong {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getFav() {
+        return fav;
+    }
+
+    public void setFav(String fav) {
+        this.fav = fav;
+    }
+
+    public String getRecent() {
+        return recent;
+    }
+
+    public void setRecent(String recent) {
+        this.recent = recent;
     }
 }
