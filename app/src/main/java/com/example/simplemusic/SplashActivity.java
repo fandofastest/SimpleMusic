@@ -9,6 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -27,11 +30,16 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import guy4444.smartrate.SmartRate;
 
 public class SplashActivity extends AppCompatActivity {
+    Button startbutton;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        startbutton=findViewById(R.id.startapp);
+        progressBar=findViewById(R.id.progress);
+        startbutton.setVisibility(View.GONE);
         getKey();
         getStatusApp(Ads.urlconfig);
 
@@ -65,16 +73,24 @@ public class SplashActivity extends AppCompatActivity {
                     showDialog(Config.appupdate);
                 }
                 else {
-                    Ads ads = new Ads(SplashActivity.this,true);
-                    ads.setCustomObjectListener(new Ads.MyCustomObjectListener() {
+                    progressBar.setVisibility(View.GONE);
+                    startbutton.setVisibility(View.VISIBLE);
+                    startbutton.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onAdsfinish() {
-                            Intent intent = new Intent(SplashActivity.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                        public void onClick(View v) {
+                            Ads ads = new Ads(SplashActivity.this,true);
+                            ads.setCustomObjectListener(new Ads.MyCustomObjectListener() {
+                                @Override
+                                public void onAdsfinish() {
+                                    Intent intent = new Intent(SplashActivity.this,MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
 
+                            });
+                        }
                     });
+
                 }
             } catch (JSONException e) {
                 Log.e("errorparsing",e.getMessage());

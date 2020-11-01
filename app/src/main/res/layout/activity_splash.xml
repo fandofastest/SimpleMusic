@@ -13,4 +13,26 @@
         android:layout_height="wrap_content"
         android:src="@drawable/icon" />
 
+    <Button
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="450sp"
+        android:id="@+id/startapp"
+        android:layout_gravity="center_vertical"
+        android:fontFamily="@font/medium"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="15sp"
+        android:background="@color/title_color_dark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="START APP"
+        />
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="450sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
 </RelativeLayout>
