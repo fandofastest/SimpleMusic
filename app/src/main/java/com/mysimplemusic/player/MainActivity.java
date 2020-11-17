@@ -1,4 +1,4 @@
-package com.example.simplemusic;
+package com.mysimplemusic.player;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,15 +10,12 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,13 +23,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.example.simplemusic.fragment.HomeFragment;
-import com.example.simplemusic.fragment.ListFragment;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.mysimplemusic.player.fragment.HomeFragment;
+import com.mysimplemusic.player.fragment.ListFragment;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -44,9 +39,12 @@ import com.warkiz.widget.IndicatorSeekBar;
 import guy4444.smartrate.SmartRate;
 import id.fando.GDPRChecker;
 
-import static com.example.simplemusic.MusicService.currentartist;
-import static com.example.simplemusic.MusicService.currenttitle;
-import static com.example.simplemusic.MusicService.totalduration;
+import static com.mysimplemusic.player.Config.INTENTFILTER;
+import static com.mysimplemusic.player.Config.PLAYING;
+import static com.mysimplemusic.player.Config.STATUSINTENT;
+import static com.mysimplemusic.player.MusicService.currentartist;
+import static com.mysimplemusic.player.MusicService.currenttitle;
+import static com.mysimplemusic.player.MusicService.totalduration;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -84,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar.setMax(MusicUtils.MAX_PROGRESS);
         play.setImageResource(R.drawable.ic_playbig);
 
-        if (MusicService.PLAYERSTATUS.equals("PLAYING")){
+        if (MusicService.PLAYERSTATUS.equals(PLAYING)){
             title.setText(currenttitle);
             artist.setText(currentartist);
             play.setImageResource(R.drawable.ic_pause_100);
@@ -165,22 +163,13 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("Quit App")
                 .setMessage("Are you sure?")
 
-                .addButton("Sure", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        System.exit(0);
-                        finishAffinity();
-                        finish();
+                .addButton("Sure", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, (dialog, which) -> {
+                    System.exit(0);
+                    finishAffinity();
+                    finish();
 
-                    }
                 })
-                .addButton("Rate App", -1, -1, CFAlertDialog.CFAlertActionStyle.DEFAULT, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        showRate();
-
-                    }
-                });
+                .addButton("Rate App", -1, -1, CFAlertDialog.CFAlertActionStyle.DEFAULT, CFAlertDialog.CFAlertActionAlignment.END, (dialog, which) -> showRate());
 
 // Show the alert
         builder.show();
@@ -238,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("RestrictedApi")
             @Override
             public void onReceive(Context context, Intent intent) {
-                String status = intent.getStringExtra("status");
+                String status = intent.getStringExtra(STATUSINTENT);
                 if (status.equals("playing")){
                     play.setVisibility(View.VISIBLE);
                     play.setImageResource(R.drawable.ic_pause_100);
@@ -258,22 +247,22 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-        }, new IntentFilter("musicplayer"));
+        }, new IntentFilter(INTENTFILTER));
 
     }
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
             updateTimerAndSeekbar();
             // Running this thread after 10 milliseconds
-            if (MusicService.PLAYERSTATUS.equals("PLAYING")) {
+            if (MusicService.PLAYERSTATUS.equals(PLAYING)) {
                 mHandler.postDelayed(this, 100);
             }
         }
     };
 
     private void updateTimerAndSeekbar() {
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "getduration");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "getduration");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
         // Updating progress bar
@@ -290,8 +279,8 @@ public class MainActivity extends AppCompatActivity {
         play.setVisibility(View.GONE);
         progressplay.setVisibility(View.VISIBLE);
 
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "next");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "next");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         mHandler.post(mUpdateTimeTask);
 
@@ -305,16 +294,15 @@ public class MainActivity extends AppCompatActivity {
         play.setVisibility(View.GONE);
         progressplay.setVisibility(View.VISIBLE);
 
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "prev");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "prev");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-//        mHandler.post(mUpdateTimeTask);
 
     }
     public void pause (){
         play.setImageResource(R.drawable.ic_playbig);
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "pause");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "pause");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
     }
@@ -329,44 +317,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void musicControll(){
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                // check for already playing
-                if (MusicService.PLAYERSTATUS.equals("PLAYING")) {
-                    pause();
-                } else {
-                    // Resume song
-                    resume();
-
-                }
+        play.setOnClickListener(arg0 -> {
+            // check for already playing
+            if (MusicService.PLAYERSTATUS.equals("PLAYING")) {
+                pause();
+            } else {
+                // Resume song
+                resume();
 
             }
+
         });
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                next();
-            }
-        });
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prev();
-            }
-        });
+        next.setOnClickListener(v -> next());
+        prev.setOnClickListener(v -> prev());
 
-        mainly.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (MusicService.PLAYERSTATUS.equals("PLAYING")){
-                    Intent intent = new Intent(MainActivity.this,MusicActivity.class);
-                    intent.putExtra("main","main");
-                    startActivity(intent);
-
-                }
+        mainly.setOnClickListener(v -> {
+            if (MusicService.PLAYERSTATUS.equals("PLAYING")){
+                Intent intent = new Intent(MainActivity.this,MusicActivity.class);
+                intent.putExtra("main","main");
+                startActivity(intent);
 
             }
+
         });
 
     }

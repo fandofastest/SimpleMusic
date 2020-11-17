@@ -1,23 +1,19 @@
-package com.example.simplemusic.adapter;
+package com.mysimplemusic.player.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.simplemusic.Ads;
-import com.example.simplemusic.MainActivity;
-import com.example.simplemusic.R;
-import com.example.simplemusic.SplashActivity;
-import com.example.simplemusic.Tools;
-import com.example.simplemusic.model.ModelSong;
+import com.mysimplemusic.player.Ads;
+import com.mysimplemusic.player.R;
+import com.mysimplemusic.player.Tools;
+import com.mysimplemusic.player.model.ModelSong;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,21 +74,12 @@ public class OriginalViewHolder extends RecyclerView.ViewHolder {
             view.songtitle.setText(obj.getTitle());
             Tools.displayImageOriginal(ctx, view.imageView, obj.getImageurl());
 
-            view.mainlylist.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            view.mainlylist.setOnClickListener(v -> {
 
-                    if (mOnItemClickListener != null) {
-                        Ads ads = new Ads(ctx,true);
-                        ads.setCustomObjectListener(new Ads.MyCustomObjectListener() {
-                            @Override
-                            public void onAdsfinish() {
-                                mOnItemClickListener.onItemClick(obj,position);
+                if (mOnItemClickListener != null) {
+                    Ads ads = new Ads(ctx,true);
+                    ads.setCustomObjectListener(() -> mOnItemClickListener.onItemClick(obj,position));
 
-                            }
-
-                        });
-                    }
                 }
             });
 

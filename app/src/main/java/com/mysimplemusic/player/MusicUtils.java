@@ -1,4 +1,4 @@
-package com.example.simplemusic;
+package com.mysimplemusic.player;
 
 public class MusicUtils  {
 
@@ -42,7 +42,7 @@ public class MusicUtils  {
      * @param totalDuration
      */
     public int getProgressSeekBar(long currentDuration, long totalDuration) {
-        Double progress = (double) 0;
+        Double progress;
         // calculating percentage
         progress = (((double) currentDuration) / totalDuration) * MAX_PROGRESS;
 

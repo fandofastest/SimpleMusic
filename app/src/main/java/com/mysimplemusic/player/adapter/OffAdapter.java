@@ -1,4 +1,4 @@
-package com.example.simplemusic.adapter;
+package com.mysimplemusic.player.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.simplemusic.Ads;
-import com.example.simplemusic.R;
-import com.example.simplemusic.model.ModelOffline;
+import com.mysimplemusic.player.Ads;
+import com.mysimplemusic.player.R;
+import com.mysimplemusic.player.model.ModelOffline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,21 +72,18 @@ public class OffAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             view.songtitle.setText(obj.getTitle());
             view.imageView.setImageResource(R.drawable.ic_default);
 
-            view.mainlylist.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            view.mainlylist.setOnClickListener(v -> {
 
-                    if (mOnItemClickListener != null) {
-                        Ads ads = new Ads(ctx,true);
-                        ads.setCustomObjectListener(new Ads.MyCustomObjectListener() {
-                            @Override
-                            public void onAdsfinish() {
-                                mOnItemClickListener.onItemClick(obj,position);
+                if (mOnItemClickListener != null) {
+                    Ads ads = new Ads(ctx,true);
+                    ads.setCustomObjectListener(new Ads.MyCustomObjectListener() {
+                        @Override
+                        public void onAdsfinish() {
+                            mOnItemClickListener.onItemClick(obj,position);
 
-                            }
+                        }
 
-                        });
-                    }
+                    });
                 }
             });
 

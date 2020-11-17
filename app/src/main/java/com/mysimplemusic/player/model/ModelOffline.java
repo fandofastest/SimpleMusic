@@ -1,4 +1,4 @@
-package com.example.simplemusic.model;
+package com.mysimplemusic.player.model;
 
 public class ModelOffline {
     String title,path;

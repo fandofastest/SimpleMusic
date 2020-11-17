@@ -1,13 +1,11 @@
-package com.example.simplemusic;
+package com.mysimplemusic.player;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 
 
 import com.facebook.ads.Ad;
@@ -25,7 +23,6 @@ import com.google.android.gms.ads.RequestConfiguration;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
@@ -35,6 +32,8 @@ public class Ads {
         InterstitialAd interstitialAdfan;
         com.facebook.ads.AdView adViewfb;
         AdView mAdViewadmob;
+
+        static String ADMOB="admob";
 
         Context context;
         com.google.android.gms.ads.InterstitialAd mInterstitialAdadmob;
@@ -60,7 +59,7 @@ public class Ads {
                     .setDetailsLabel("Please Wait")
                     .setMaxProgress(100)
                     .show();
-            if (primaryads.equals("admob")){
+            if (primaryads.equals(ADMOB)){
                 showinteradmob(this.context,admobinter);
             }
             else if (primaryads.equals("fan")){
@@ -239,9 +238,7 @@ public class Ads {
 
 
         mAdViewadmob.loadAd(builder.build());
-//        mAdViewLayout.addView(mAdView);
-        System.out.println(fanbanner);
-        if (Ads.primaryads.equals("admob")){
+        if (Ads.primaryads.equals(ADMOB)){
             mAdViewLayout.addView(mAdViewadmob);
 
         }

@@ -1,4 +1,4 @@
-package com.example.simplemusic;
+package com.mysimplemusic.player;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -15,20 +15,23 @@ import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
+
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.example.simplemusic.model.ModelOffline;
-import com.example.simplemusic.model.ModelSong;
+import com.mysimplemusic.player.model.ModelOffline;
+import com.mysimplemusic.player.model.ModelSong;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+
+import static com.mysimplemusic.player.Config.INTENTFILTER;
+import static com.mysimplemusic.player.Config.PLAYING;
+import static com.mysimplemusic.player.Config.STATUSINTENT;
 
 public class MusicService extends Service {
 
@@ -53,9 +56,7 @@ public class MusicService extends Service {
     public static  Equalizer mEqualizer;
     public static BassBoost bassBoost;
     public static PresetReverb presetReverb;
-//    EqualizerModel  equalizerModel;
 
-    //player
     private MediaPlayer mp = new MediaPlayer();
 
 
@@ -65,13 +66,13 @@ public class MusicService extends Service {
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String status = intent.getStringExtra("status");
+                String status = intent.getStringExtra(STATUSINTENT);
                 if (status.equals("pause")){
                     mp.pause();
                     PLAYERSTATUS="PAUSE";
                 }
                 else if (status.equals("resume")){
-                    PLAYERSTATUS="PLAYING";
+                    PLAYERSTATUS=PLAYING;
                     mp.start();
                 }
                 else  if (status.equals("seek")){
@@ -99,6 +100,7 @@ public class MusicService extends Service {
                     Long end= intent.getLongExtra("end",0);
                     new CountDownTimer(end, 1000) {
                         public void onTick(long millisUntilFinished) {
+                            //needed by library
                         }
                         public void onFinish() {
                             PLAYERSTATUS="STOPING";
@@ -107,7 +109,7 @@ public class MusicService extends Service {
                     }.start();
                 }
             }
-        }, new IntentFilter("musicplayer"));
+        }, new IntentFilter(INTENTFILTER));
     }
 
     @Nullable
@@ -119,7 +121,6 @@ public class MusicService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         initrealm();
-//        Log.e("gotoSonglist", String.valueOf(intent.getBooleanExtra("online",true)));
 
         if (intent.getBooleanExtra("online",true)){
 
@@ -149,8 +150,8 @@ public class MusicService extends Service {
             currenttitle=modelSong.getTitle();
             currentimageurl=modelSong.getImageurl();
 
-            Intent intent = new Intent("musicplayer");
-            intent.putExtra("status", "prepare");
+            Intent intent = new Intent(INTENTFILTER);
+            intent.putExtra(STATUSINTENT, "prepare");
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
 
@@ -161,26 +162,18 @@ public class MusicService extends Service {
             mp = new MediaPlayer();
             mp.setDataSource(this, myUri);
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    return true;
+            mp.setOnErrorListener((mp, what, extra) -> true);
+            mp.setOnCompletionListener(mp1 -> {
+                if (REPEAT.equals("ON")){
+                    playsong(currentpos);
                 }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp1) {
-                    if (REPEAT.equals("ON")){
-                        playsong(currentpos);
-                    }
-                    else if (SHUFFLE.equals("ON")){
-                        int pos= (int) (Math.random() * (currentlist.size()));
-                        playsong(pos);
-                    }
-                    else {
+                else if (SHUFFLE.equals("ON")){
+                    int pos1 = (int) (Math.random() * (currentlist.size()));
+                    playsong(pos1);
+                }
+                else {
 
-                        playsong(currentpos+1);
-                    }
+                    playsong(currentpos+1);
                 }
             });
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -195,17 +188,16 @@ public class MusicService extends Service {
                     } else {
                         mp.start();
                         PLAYERSTATUS="PLAYING";
-                        Intent intent = new Intent("musicplayer");
-                        intent.putExtra("status", "playing");
+                        Intent intent = new Intent(INTENTFILTER);
+                        intent.putExtra(STATUSINTENT, "playing");
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-//                        setEqualizer(sessionId);
                     }
                 }
             });
             mp.prepareAsync();
         }
         catch (Exception e){
-            System.out.println(e);
+            Log.d("TAG", "playsong: "+e);
         }
     }
 
@@ -236,26 +228,18 @@ public class MusicService extends Service {
             Uri myUri = Uri.parse(modelSong.getPath());
             mp = new MediaPlayer();
             mp.setDataSource(this, myUri);
-            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    return true;
+            mp.setOnErrorListener((mp, what, extra) -> true);
+            mp.setOnCompletionListener(mp1 -> {
+                if (REPEAT.equals("ON")){
+                    playsongoff(currentoffpos);
                 }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp1) {
-                    if (REPEAT.equals("ON")){
-                        playsongoff(currentoffpos);
-                    }
-                    else if (SHUFFLE.equals("ON")){
-                        int pos= (int) (Math.random() * (currentlist.size()));
-                        playsongoff(pos);
-                    }
-                    else {
+                else if (SHUFFLE.equals("ON")){
+                    int pos1 = (int) (Math.random() * (currentlist.size()));
+                    playsongoff(pos1);
+                }
+                else {
 
-                        playsongoff(currentoffpos+1);
-                    }
+                    playsongoff(currentoffpos+1);
                 }
             });
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -272,14 +256,13 @@ public class MusicService extends Service {
                         Intent intent = new Intent("musicplayer");
                         intent.putExtra("status", "playing");
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-//                        setEqualizer(sessionId);
                     }
                 }
             });
             mp.prepareAsync();
         }
         catch (Exception e){
-            System.out.println(e);
+            Log.d("TAG", "playsongoff: "+e);
         }
     }
     public void  initrealm(){
@@ -288,35 +271,4 @@ public class MusicService extends Service {
         realm = Realm.getInstance(configuration);
     }
 
-//    public void setEqualizer(int audioSesionId){
-//        try {
-//            mEqualizer = new Equalizer(0, audioSesionId);
-//
-//            bassBoost = new BassBoost(0, audioSesionId);
-//            bassBoost.setEnabled(true);
-//            BassBoost.Settings bassBoostSettingTemp = bassBoost.getProperties();
-//            BassBoost.Settings bassBoostSetting     = new BassBoost.Settings(bassBoostSettingTemp.toString());
-//            bassBoostSetting.strength = Settings.equalizerModel.getBassStrength();
-//            bassBoost.setProperties(bassBoostSetting);
-//
-//            presetReverb = new PresetReverb(0, audioSesionId);
-//            presetReverb.setPreset(Settings.equalizerModel.getReverbPreset());
-//            presetReverb.setEnabled(true);
-//
-//            mEqualizer.setEnabled(true);
-//            if (Settings.presetPos == 0){
-//                for (short bandIdx = 0; bandIdx < mEqualizer.getNumberOfBands(); bandIdx++) {
-//                    mEqualizer.setBandLevel(bandIdx, (short) Settings.seekbarpos[bandIdx]);
-//                }
-//            }
-//            else {
-//                mEqualizer.usePreset((short) Settings.presetPos);
-//            }
-//        }
-//
-//        catch (Exception e){
-//            Log.e("TAG", "setEqualizer: "+e.getMessage() );
-//        }
-//
-//    }
 }

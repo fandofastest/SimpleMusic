@@ -1,4 +1,4 @@
-package com.example.simplemusic.fragment;
+package com.mysimplemusic.player.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,22 +10,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.simplemusic.MusicActivity;
-import com.example.simplemusic.R;
-import com.example.simplemusic.adapter.OffAdapter;
-import com.example.simplemusic.adapter.SongAdapter;
-import com.example.simplemusic.model.ModelOffline;
-import com.example.simplemusic.model.ModelSong;
+import com.mysimplemusic.player.MusicActivity;
+import com.mysimplemusic.player.R;
+import com.mysimplemusic.player.adapter.OffAdapter;
+import com.mysimplemusic.player.adapter.SongAdapter;
+import com.mysimplemusic.player.model.ModelSong;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,13 +31,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.simplemusic.Config.APIKEY;
-import static com.example.simplemusic.MusicService.currentlist;
-import static com.example.simplemusic.MusicService.listfavorite;
-import static com.example.simplemusic.MusicService.listoff;
-import static com.example.simplemusic.MusicService.listpopuler;
-import static com.example.simplemusic.MusicService.listrecent;
-import static com.example.simplemusic.MusicService.listtrending;
+import static com.mysimplemusic.player.Config.APIKEY;
+import static com.mysimplemusic.player.MusicService.currentlist;
+import static com.mysimplemusic.player.MusicService.listfavorite;
+import static com.mysimplemusic.player.MusicService.listoff;
+import static com.mysimplemusic.player.MusicService.listpopuler;
+import static com.mysimplemusic.player.MusicService.listrecent;
+import static com.mysimplemusic.player.MusicService.listtrending;
 import static io.realm.Realm.getApplicationContext;
 
 /**
@@ -144,27 +141,20 @@ public class ListFragment extends Fragment {
 
         if (listtype.equals("Local")){
             rvlistl.setAdapter(offAdapter);
-            offAdapter.setOnItemClickListener(new OffAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(ModelOffline obj, int position) {
-                    Intent intent = new Intent(context, MusicActivity.class);
-                    intent.putExtra("pos",position);
-                    intent.putExtra("local",true);
-                    startActivity(intent);
-                }
-
+            offAdapter.setOnItemClickListener((obj, position) -> {
+                Intent intent = new Intent(context, MusicActivity.class);
+                intent.putExtra("pos",position);
+                intent.putExtra("local",true);
+                startActivity(intent);
             });
 
         }
         else {
             rvlistl.setAdapter(songAdapter);
-            songAdapter.setOnItemClickListener(new SongAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(ModelSong obj, int position) {
-                    Intent intent = new Intent(context, MusicActivity.class);
-                    intent.putExtra("pos",position);
-                    startActivity(intent);
-                }
+            songAdapter.setOnItemClickListener((obj, position) -> {
+                Intent intent = new Intent(context, MusicActivity.class);
+                intent.putExtra("pos",position);
+                startActivity(intent);
             });
 
         }
@@ -175,50 +165,42 @@ public class ListFragment extends Fragment {
         rvlistl.removeAllViews();
         String url;
         url="https://api-v2.soundcloud.com/search/tracks?q="+q+"&client_id="+APIKEY+"&limit=100";
-        final JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray jsonArray1=response.getJSONArray("collection");
+        final JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                JSONArray jsonArray1=response.getJSONArray("collection");
 
-                    for (int i = 0;i<jsonArray1.length();i++){
-                        JSONObject jsonObject=jsonArray1.getJSONObject(i);
-                        ModelSong listModalClass = new ModelSong();
-                        listModalClass.setId(jsonObject.getInt("id"));
-                        listModalClass.setTitle(jsonObject.getString("title"));
-                        listModalClass.setImageurl(jsonObject.getString("artwork_url"));
-                        listModalClass.setDuration(jsonObject.getString("full_duration"));
-                        listModalClass.setType("online");
+                for (int i = 0;i<jsonArray1.length();i++){
+                    JSONObject jsonObject=jsonArray1.getJSONObject(i);
+                    ModelSong listModalClass = new ModelSong();
+                    listModalClass.setId(jsonObject.getInt("id"));
+                    listModalClass.setTitle(jsonObject.getString("title"));
+                    listModalClass.setImageurl(jsonObject.getString("artwork_url"));
+                    listModalClass.setDuration(jsonObject.getString("full_duration"));
+                    listModalClass.setType("online");
 
 
-                        try {
-                            JSONObject jsonArray3=jsonObject.getJSONObject("publisher_metadata");
-                            listModalClass.setArtist(jsonArray3.getString("artist"));
+                    try {
+                        JSONObject jsonArray3=jsonObject.getJSONObject("publisher_metadata");
+                        listModalClass.setArtist(jsonArray3.getString("artist"));
 
-                        }
-                        catch (JSONException e){
-                            listModalClass.setArtist("Artist");
-
-                        }
-                        listsearch.add(listModalClass);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    catch (JSONException e){
+                        listModalClass.setArtist("Artist");
+
+                    }
+                    listsearch.add(listModalClass);
                 }
-                songAdapter.notifyDataSetChanged();
-                currentlist=listsearch;
-//                songAdapter.notifyDataSetChanged();
-                //    System.out.println("update"+listsongModalSearch);
-
-
-
-
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+            songAdapter.notifyDataSetChanged();
+            currentlist=listsearch;
 
-            }
+
+
+
+        }, error -> {
+
         });
 
         Volley.newRequestQueue(getApplicationContext()).add(jsonObjectRequest);

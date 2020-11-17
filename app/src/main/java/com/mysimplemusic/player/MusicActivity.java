@@ -1,4 +1,4 @@
-package com.example.simplemusic;
+package com.mysimplemusic.player;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,16 +16,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.example.simplemusic.model.ModelOffline;
-import com.example.simplemusic.model.ModelSong;
+import com.mysimplemusic.player.model.ModelOffline;
+import com.mysimplemusic.player.model.ModelSong;
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 
-import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import hiennguyen.me.circleseekbar.CircleSeekBar;
@@ -35,15 +32,18 @@ import io.realm.RealmConfiguration;
 import ir.siaray.downloadmanagerplus.classes.Downloader;
 import ir.siaray.downloadmanagerplus.enums.Storage;
 
-import static com.example.simplemusic.MusicService.currentartist;
-import static com.example.simplemusic.MusicService.currentimageurl;
-import static com.example.simplemusic.MusicService.currentlist;
-import static com.example.simplemusic.MusicService.currentoffpos;
-import static com.example.simplemusic.MusicService.currentonline;
-import static com.example.simplemusic.MusicService.currentpos;
-import static com.example.simplemusic.MusicService.currenttitle;
-import static com.example.simplemusic.MusicService.listoff;
-import static com.example.simplemusic.MusicService.totalduration;
+import static com.mysimplemusic.player.Config.INTENTFILTER;
+import static com.mysimplemusic.player.Config.PLAYING;
+import static com.mysimplemusic.player.Config.STATUSINTENT;
+import static com.mysimplemusic.player.MusicService.currentartist;
+import static com.mysimplemusic.player.MusicService.currentimageurl;
+import static com.mysimplemusic.player.MusicService.currentlist;
+import static com.mysimplemusic.player.MusicService.currentoffpos;
+import static com.mysimplemusic.player.MusicService.currentonline;
+import static com.mysimplemusic.player.MusicService.currentpos;
+import static com.mysimplemusic.player.MusicService.currenttitle;
+import static com.mysimplemusic.player.MusicService.listoff;
+import static com.mysimplemusic.player.MusicService.totalduration;
 
 public class MusicActivity extends AppCompatActivity {
     ImageButton back,fav,download,shuffle,repeat,prev,next,play,voldown,volup;
@@ -73,7 +73,7 @@ public class MusicActivity extends AppCompatActivity {
         initrealm();
 
         if (getIntent().hasExtra("main")){
-            if (MusicService.PLAYERSTATUS.equals("PLAYING")){
+            if (MusicService.PLAYERSTATUS.equals(PLAYING)){
             title.setText(currenttitle);
             artist.setText(currentartist);
             Tools.displayImageOriginal(MusicActivity.this,songimage,currentimageurl);
@@ -135,8 +135,8 @@ public class MusicActivity extends AppCompatActivity {
                     int totaldura= (int) totalduration;
                     int seek= (int) (totaldura*currentseek);
 
-                    Intent intent = new Intent("musicplayer");
-                    intent.putExtra("status", "seek");
+                    Intent intent = new Intent(INTENTFILTER);
+                    intent.putExtra(STATUSINTENT, "seek");
                     intent.putExtra("seektime",seek);
                     LocalBroadcastManager.getInstance(MusicActivity.this).sendBroadcast(intent);
 
@@ -145,12 +145,13 @@ public class MusicActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(CircleSeekBar circleSeekBar) {
+                //needed by listener
 
             }
 
             @Override
             public void onStopTrackingTouch(CircleSeekBar circleSeekBar) {
-
+                //needed by listener
             }
         });
 
@@ -167,105 +168,77 @@ public class MusicActivity extends AppCompatActivity {
         realm = Realm.getInstance(configuration);
     }
     public void musicControll(){
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                // check for already playing
-                if (MusicService.PLAYERSTATUS.equals("PLAYING")) {
-                    pause();
-                } else {
-                    // Resume song
-                    resume();
-
-                }
+        play.setOnClickListener(arg0 -> {
+            // check for already playing
+            if (MusicService.PLAYERSTATUS.equals("PLAYING")) {
+                pause();
+            } else {
+                // Resume song
+                resume();
 
             }
+
         });
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                next();
-            }
-        });
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                prev();
-            }
-        });
-        fav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        next.setOnClickListener(v -> next());
+        prev.setOnClickListener(v -> prev());
+        fav.setOnClickListener(v -> {
 
-                RealmHelper realmHelper = new RealmHelper(realm,getApplication());
-                if (realmHelper.getStatusFav(modelSong.getId())) {
-                    realmHelper.updateFav(modelSong.getId(),"0");
-                    fav.setImageResource(R.drawable.ic_like);
+            RealmHelper realmHelper = new RealmHelper(realm,getApplication());
+            if (realmHelper.getStatusFav(modelSong.getId())) {
+                realmHelper.updateFav(modelSong.getId(),"0");
+                fav.setImageResource(R.drawable.ic_like);
 
-                    pDialog = new SweetAlertDialog(MusicActivity.this, SweetAlertDialog.SUCCESS_TYPE);
-                    pDialog.getProgressHelper().setBarColor(R.color.bludemain);
-                    pDialog.setTitleText("Remove from favorite");
-
-                }
-                else {
-                    realmHelper.saveFav(modelSong);
-                    fav.setImageResource(R.drawable.ic_fav_full);
-                    pDialog = new SweetAlertDialog(MusicActivity.this, SweetAlertDialog.SUCCESS_TYPE);
-                    pDialog.getProgressHelper().setBarColor(R.color.bludemain);
-                    pDialog.setTitleText("Added to favorite");
-
-                }
-                pDialog.setCancelable(false);
-                pDialog.show();
-
+                pDialog = new SweetAlertDialog(MusicActivity.this, SweetAlertDialog.SUCCESS_TYPE);
+                pDialog.getProgressHelper().setBarColor(R.color.bludemain);
+                pDialog.setTitleText("Remove from favorite");
 
             }
+            else {
+                realmHelper.saveFav(modelSong);
+                fav.setImageResource(R.drawable.ic_fav_full);
+                pDialog = new SweetAlertDialog(MusicActivity.this, SweetAlertDialog.SUCCESS_TYPE);
+                pDialog.getProgressHelper().setBarColor(R.color.bludemain);
+                pDialog.setTitleText("Added to favorite");
+
+            }
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+
         });
 
-        shuffle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              if (MusicService.SHUFFLE.equals("OFF")){
-                  MusicService.SHUFFLE="ON";
-                  shuffle.setImageResource(R.drawable.ic_shuffle_tint);
-              }
-              else {
-                  MusicService.SHUFFLE="OFF";
-                  shuffle.setImageResource(R.drawable.ic_shuffle);
-              }
+        shuffle.setOnClickListener(v -> {
+          if (MusicService.SHUFFLE.equals("OFF")){
+              MusicService.SHUFFLE="ON";
+              shuffle.setImageResource(R.drawable.ic_shuffle_tint);
+          }
+          else {
+              MusicService.SHUFFLE="OFF";
+              shuffle.setImageResource(R.drawable.ic_shuffle);
+          }
+        });
+
+        repeat.setOnClickListener(v -> {
+            if (MusicService.REPEAT.equals("OFF")){
+                MusicService.REPEAT="ON";
+                repeat.setImageResource(R.drawable.ic_repeat_tint);
+            }
+            else {
+                MusicService.REPEAT="OFF";
+                repeat.setImageResource(R.drawable.ic_repeat);
             }
         });
 
-        repeat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (MusicService.REPEAT.equals("OFF")){
-                    MusicService.REPEAT="ON";
-                    repeat.setImageResource(R.drawable.ic_repeat_tint);
-                }
-                else {
-                    MusicService.REPEAT="OFF";
-                    repeat.setImageResource(R.drawable.ic_repeat);
-                }
-            }
+        volup.setOnClickListener(v -> {
+            audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+            int volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            seekbarvolume.setProgress(volumeLevel);
         });
-
-        volup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
-                int volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                seekbarvolume.setProgress(volumeLevel);
-            }
-        });
-        voldown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
-                int volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                seekbarvolume.setProgress(volumeLevel);
-        }
-        });
+        voldown.setOnClickListener(v -> {
+            audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+            int volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            seekbarvolume.setProgress(volumeLevel);
+    });
 
 
         seekbarvolume.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
@@ -283,44 +256,43 @@ public class MusicActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(IndicatorSeekBar seekBar) {
+                //needed by listener
 
             }
 
             @Override
             public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
+                //needed by listener
 
             }
         });
 
-        download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Downloader downloader = Downloader.getInstance(MusicActivity.this)
-                        .setUrl(Config.SERVERMUSIC+modelSong.getId())
-                        .setToken("download")
-                        .setAllowedOverRoaming(true)
-                        .setAllowedOverMetered(true) //Api 16 and higher
-                        .setVisibleInDownloadsUi(true)
-                        .setDestinationDir(Storage.DIRECTORY_DOWNLOADS, modelSong.getTitle())
-                        .setNotificationTitle(modelSong.getTitle());
+        download.setOnClickListener(v -> {
+            Downloader downloader = Downloader.getInstance(MusicActivity.this)
+                    .setUrl(Config.SERVERMUSIC+modelSong.getId())
+                    .setToken("download")
+                    .setAllowedOverRoaming(true)
+                    .setAllowedOverMetered(true) //Api 16 and higher
+                    .setVisibleInDownloadsUi(true)
+                    .setDestinationDir(Storage.DIRECTORY_DOWNLOADS, modelSong.getTitle())
+                    .setNotificationTitle(modelSong.getTitle());
 
-                downloader.start();
-            }
+            downloader.start();
         });
 
     }
     public void pause (){
         play.setImageResource(R.drawable.ic_playbig);
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "pause");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "pause");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
     }
 
     public void resume (){
         play.setImageResource(R.drawable.ic_pause_100);
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "resume");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "resume");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         mHandler.post(mUpdateTimeTask);
 
@@ -337,8 +309,8 @@ public class MusicActivity extends AppCompatActivity {
         play.setVisibility(View.GONE);
         progressplay.setVisibility(View.VISIBLE);
 
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "next");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "next");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         mHandler.post(mUpdateTimeTask);
 
@@ -353,10 +325,9 @@ public class MusicActivity extends AppCompatActivity {
         play.setVisibility(View.GONE);
         progressplay.setVisibility(View.VISIBLE);
 
-        Intent intent = new Intent("musicplayer");
-        intent.putExtra("status", "prev");
+        Intent intent = new Intent(INTENTFILTER);
+        intent.putExtra(STATUSINTENT, "prev");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-//        mHandler.post(mUpdateTimeTask);
 
     }
     @SuppressLint("WrongViewCast")

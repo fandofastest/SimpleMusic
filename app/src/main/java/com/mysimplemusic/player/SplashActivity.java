@@ -1,10 +1,9 @@
-package com.example.simplemusic;
+package com.mysimplemusic.player;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,17 +16,12 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
+
 
 import org.json.JSONException;
 
-import java.util.Arrays;
-import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import guy4444.smartrate.SmartRate;
 
 public class SplashActivity extends AppCompatActivity {
     Button startbutton;
@@ -74,20 +68,17 @@ public class SplashActivity extends AppCompatActivity {
                 else {
                     progressBar.setVisibility(View.GONE);
                     startbutton.setVisibility(View.VISIBLE);
-                    startbutton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Ads ads = new Ads(SplashActivity.this,true);
-                            ads.setCustomObjectListener(new Ads.MyCustomObjectListener() {
-                                @Override
-                                public void onAdsfinish() {
-                                    Intent intent = new Intent(SplashActivity.this,MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
+                    startbutton.setOnClickListener(v -> {
+                        Ads ads = new Ads(SplashActivity.this,true);
+                        ads.setCustomObjectListener(new Ads.MyCustomObjectListener() {
+                            @Override
+                            public void onAdsfinish() {
+                                Intent intent = new Intent(SplashActivity.this,MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
 
-                            });
-                        }
+                        });
                     });
 
                 }
@@ -95,7 +86,6 @@ public class SplashActivity extends AppCompatActivity {
                 Log.e("errorparsing",e.getMessage());
             }
         }, error -> {
-            System.out.println("errorrespones"+error.getMessage());
         });
         Volley.newRequestQueue(getApplicationContext()).add(jsonObjectRequest);
     }

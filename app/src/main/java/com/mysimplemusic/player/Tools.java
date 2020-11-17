@@ -1,4 +1,4 @@
-package com.example.simplemusic;
+package com.mysimplemusic.player;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -13,7 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.util.TypedValue;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -36,6 +36,9 @@ import java.util.Date;
 public class Tools  {
     public static int  DURATION = 1;
 
+    Tools(){
+        //constructor
+    }
 
     public static void setSystemBarColor(Activity act) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -106,6 +109,7 @@ public class Tools  {
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(img);
         } catch (Exception e) {
+            Log.e("TAG", "eee: "+e );
         }
     }
 
@@ -116,9 +120,8 @@ public class Tools  {
                     .error(R.drawable.itemsong)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(img);
-            System.out.println("imageload "+url);
         } catch (Exception e) {
-            System.out.println(e);
+            Log.e("TAG", "displayImage: "+e );
         }
     }
 
@@ -137,18 +140,8 @@ public class Tools  {
         return newFormat.format(new Date(time));
     }
 
-    public static String getEmailFromName(String name) {
-        if (name != null && !name.equals("")) {
-            String email = name.replaceAll(" ", ".").toLowerCase().concat("@mail.com");
-            return email;
-        }
-        return name;
-    }
 
-    public static int dpToPx(Context c, int dp) {
-        Resources r = c.getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
-    }
+
 
 
 
@@ -160,12 +153,7 @@ public class Tools  {
     }
 
     public static void nestedScrollTo(final NestedScrollView nested, final View targetView) {
-        nested.post(new Runnable() {
-            @Override
-            public void run() {
-                nested.scrollTo(500, targetView.getBottom());
-            }
-        });
+        nested.post(() -> nested.scrollTo(500, targetView.getBottom()));
     }
 
     public static int dip2px(Context context, float dpValue) {
@@ -223,6 +211,8 @@ public class Tools  {
             drawable.mutate();
             drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         } catch (Exception e) {
+            Log.e("TAG", "displayImage: "+e );
+
         }
     }
 

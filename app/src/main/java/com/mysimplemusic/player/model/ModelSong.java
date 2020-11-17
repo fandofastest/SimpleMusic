@@ -1,4 +1,4 @@
-package com.example.simplemusic.model;
+package com.mysimplemusic.player.model;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -9,6 +9,7 @@ public class ModelSong extends RealmObject {
     private String title,songurl,imageurl,duration,artist,type,fav,recent;
 
     public ModelSong() {
+        //constructor
     }
 
     public String getSongurl() {

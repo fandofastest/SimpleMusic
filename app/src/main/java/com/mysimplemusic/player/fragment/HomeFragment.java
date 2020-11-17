@@ -1,4 +1,4 @@
-package com.example.simplemusic.fragment;
+package com.mysimplemusic.player.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,22 +21,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.simplemusic.MainActivity;
-import com.example.simplemusic.MusicActivity;
-import com.example.simplemusic.MusicService;
-import com.example.simplemusic.RealmHelper;
-import com.example.simplemusic.adapter.OffAdapter;
-import com.example.simplemusic.model.ModelOffline;
-import com.example.simplemusic.model.ModelSong;
-import com.example.simplemusic.R;
-import com.example.simplemusic.adapter.SongAdapter;
+import com.mysimplemusic.player.MainActivity;
+import com.mysimplemusic.player.MusicActivity;
+import com.mysimplemusic.player.RealmHelper;
+import com.mysimplemusic.player.adapter.OffAdapter;
+import com.mysimplemusic.player.model.ModelOffline;
+import com.mysimplemusic.player.model.ModelSong;
+import com.mysimplemusic.player.R;
+import com.mysimplemusic.player.adapter.SongAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,13 +46,13 @@ import java.util.Objects;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
-import static com.example.simplemusic.Config.APIKEY;
-import static com.example.simplemusic.MusicService.currentlist;
-import static com.example.simplemusic.MusicService.listfavorite;
-import static com.example.simplemusic.MusicService.listoff;
-import static com.example.simplemusic.MusicService.listpopuler;
-import static com.example.simplemusic.MusicService.listrecent;
-import static com.example.simplemusic.MusicService.listtrending;
+import static com.mysimplemusic.player.Config.APIKEY;
+import static com.mysimplemusic.player.MusicService.currentlist;
+import static com.mysimplemusic.player.MusicService.listfavorite;
+import static com.mysimplemusic.player.MusicService.listoff;
+import static com.mysimplemusic.player.MusicService.listpopuler;
+import static com.mysimplemusic.player.MusicService.listrecent;
+import static com.mysimplemusic.player.MusicService.listtrending;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,8 +67,8 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+     String mParam1;
+     String mParam2;
     Realm realm;
     SearchView searchview;
 
@@ -157,14 +153,11 @@ public class HomeFragment extends Fragment {
         recyclerViewfav.setHasFixedSize(true);
         //set data and list adapter
         favAdapter = new SongAdapter(context, listfavorite,R.layout.item_song);
-        favAdapter.setOnItemClickListener(new SongAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(ModelSong obj, int position) {
-                currentlist=listfavorite;
-                Intent intent = new Intent(context, MusicActivity.class);
-                intent.putExtra("pos",position);
-                startActivity(intent);
-            }
+        favAdapter.setOnItemClickListener((obj, position) -> {
+            currentlist=listfavorite;
+            Intent intent = new Intent(context, MusicActivity.class);
+            intent.putExtra("pos",position);
+            startActivity(intent);
         });
         recyclerViewfav.setAdapter(favAdapter);
 
@@ -173,14 +166,11 @@ public class HomeFragment extends Fragment {
         rvpopuler.setHasFixedSize(true);
         //set data and list adapter
         populerAdapter = new SongAdapter(context, listpopuler,R.layout.item_song);
-        populerAdapter.setOnItemClickListener(new SongAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(ModelSong obj, int position) {
-                currentlist=listpopuler;
-                Intent intent = new Intent(context, MusicActivity.class);
-                intent.putExtra("pos",position);
-                startActivity(intent);
-            }
+        populerAdapter.setOnItemClickListener((obj, position) -> {
+            currentlist=listpopuler;
+            Intent intent = new Intent(context, MusicActivity.class);
+            intent.putExtra("pos",position);
+            startActivity(intent);
         });
         rvpopuler.setAdapter(populerAdapter);
 
@@ -189,14 +179,11 @@ public class HomeFragment extends Fragment {
         rvtrending.setHasFixedSize(true);
         //set data and list adapter
         trendingAdapter = new SongAdapter(context, listtrending,R.layout.item_song);
-        trendingAdapter.setOnItemClickListener(new SongAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(ModelSong obj, int position) {
-                currentlist=listtrending;
-                Intent intent = new Intent(context, MusicActivity.class);
-                intent.putExtra("pos",position);
-                startActivity(intent);
-            }
+        trendingAdapter.setOnItemClickListener((obj, position) -> {
+            currentlist=listtrending;
+            Intent intent = new Intent(context, MusicActivity.class);
+            intent.putExtra("pos",position);
+            startActivity(intent);
         });
         rvtrending.setAdapter(trendingAdapter);
 
@@ -206,14 +193,11 @@ public class HomeFragment extends Fragment {
         rvrecent.setHasFixedSize(true);
         //set data and list adapter
         recentAdapter = new SongAdapter(context, listrecent,R.layout.item_song);
-        recentAdapter.setOnItemClickListener(new SongAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(ModelSong obj, int position) {
-                currentlist=listrecent;
-                Intent intent = new Intent(context, MusicActivity.class);
-                intent.putExtra("pos",position);
-                startActivity(intent);
-            }
+        recentAdapter.setOnItemClickListener((obj, position) -> {
+            currentlist=listrecent;
+            Intent intent = new Intent(context, MusicActivity.class);
+            intent.putExtra("pos",position);
+            startActivity(intent);
         });
         rvrecent.setAdapter(recentAdapter);
 
@@ -223,54 +207,20 @@ public class HomeFragment extends Fragment {
         rvlocal.setHasFixedSize(true);
         //set data and list adapter
         offAdapter = new OffAdapter(context, listoff,R.layout.item_song);
-        offAdapter.setOnItemClickListener(new OffAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(ModelOffline obj, int position) {
-                Intent intent = new Intent(context, MusicActivity.class);
-                intent.putExtra("pos",position);
-                intent.putExtra("local",true);
-                startActivity(intent);
-            }
-
+        offAdapter.setOnItemClickListener((obj, position) -> {
+            Intent intent = new Intent(context, MusicActivity.class);
+            intent.putExtra("pos",position);
+            intent.putExtra("local",true);
+            startActivity(intent);
         });
         rvlocal.setAdapter(offAdapter);
 
 
-        buttonmorefav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).gotoSonglist("Favorite","");
-
-            }
-        });
-        buttonmoretrending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).gotoSonglist("Trending","");
-
-            }
-        });
-        buttonmorepopular.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).gotoSonglist("Populer","");
-
-            }
-        });
-        buttonmorerecent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).gotoSonglist("Recent","");
-
-            }
-        });
-        buttonmorelocal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).gotoSonglist("Local","");
-
-            }
-        });
+        buttonmorefav.setOnClickListener(v -> ((MainActivity) getActivity()).gotoSonglist("Favorite",""));
+        buttonmoretrending.setOnClickListener(v -> ((MainActivity) getActivity()).gotoSonglist("Trending",""));
+        buttonmorepopular.setOnClickListener(v -> ((MainActivity) getActivity()).gotoSonglist("Populer",""));
+        buttonmorerecent.setOnClickListener(v -> ((MainActivity) getActivity()).gotoSonglist("Recent",""));
+        buttonmorelocal.setOnClickListener(v -> ((MainActivity) getActivity()).gotoSonglist("Local",""));
     initrealm();
     getTrending();
     getPopular();
@@ -307,39 +257,33 @@ public class HomeFragment extends Fragment {
         listtrending.clear();
         rvtrending.removeAllViews();
         String url="https://api-v2.soundcloud.com/charts?kind=trending&genre=soundcloud:genres:all-music&high_tier_only=false&limit=100&client_id="+APIKEY;
-        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray jsonArray1=response.getJSONArray("collection");
-                    for (int i = 0;i<jsonArray1.length();i++){
-                        JSONObject jsonObject1=jsonArray1.getJSONObject(i);
-                        JSONObject jsonObject=jsonObject1.getJSONObject("track");
-                        ModelSong modelSong = new ModelSong();
-                        modelSong.setId(jsonObject.getInt("id"));
-                        modelSong.setTitle(jsonObject.getString("title"));
-                        modelSong.setImageurl(jsonObject.getString("artwork_url"));
-                        modelSong.setDuration(jsonObject.getString("full_duration"));
-                        modelSong.setType("online");
-                        try {
-                            JSONObject jsonArray3=jsonObject.getJSONObject("publisher_metadata");
-                            modelSong.setArtist(jsonArray3.getString("artist"));
-                        }
-                        catch (JSONException e){
-                            modelSong.setArtist("Artist");
-                        }
-                        listtrending.add(modelSong);
+        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                JSONArray jsonArray1=response.getJSONArray("collection");
+                for (int i = 0;i<jsonArray1.length();i++){
+                    JSONObject jsonObject1=jsonArray1.getJSONObject(i);
+                    JSONObject jsonObject=jsonObject1.getJSONObject("track");
+                    ModelSong modelSong = new ModelSong();
+                    modelSong.setId(jsonObject.getInt("id"));
+                    modelSong.setTitle(jsonObject.getString("title"));
+                    modelSong.setImageurl(jsonObject.getString("artwork_url"));
+                    modelSong.setDuration(jsonObject.getString("full_duration"));
+                    modelSong.setType("online");
+                    try {
+                        JSONObject jsonArray3=jsonObject.getJSONObject("publisher_metadata");
+                        modelSong.setArtist(jsonArray3.getString("artist"));
                     }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    catch (JSONException e){
+                        modelSong.setArtist("Artist");
+                    }
+                    listtrending.add(modelSong);
                 }
-                trendingAdapter.notifyDataSetChanged();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
+            trendingAdapter.notifyDataSetChanged();
+        }, error -> {
         });
 
         Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
@@ -350,39 +294,33 @@ public class HomeFragment extends Fragment {
         listpopuler.clear();
         rvpopuler.removeAllViews();
         String url="https://api-v2.soundcloud.com/charts?kind=top&genre=soundcloud:genres:all-music&high_tier_only=false&limit=100&client_id="+APIKEY;
-        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray jsonArray1=response.getJSONArray("collection");
-                    for (int i = 0;i<jsonArray1.length();i++){
-                        JSONObject jsonObject1=jsonArray1.getJSONObject(i);
-                        JSONObject jsonObject=jsonObject1.getJSONObject("track");
-                        ModelSong modelSong = new ModelSong();
-                        modelSong.setId(jsonObject.getInt("id"));
-                        modelSong.setTitle(jsonObject.getString("title"));
-                        modelSong.setImageurl(jsonObject.getString("artwork_url"));
-                        modelSong.setDuration(jsonObject.getString("full_duration"));
-                        modelSong.setType("online");
-                        try {
-                            JSONObject jsonArray3=jsonObject.getJSONObject("publisher_metadata");
-                            modelSong.setArtist(jsonArray3.getString("artist"));
-                        }
-                        catch (JSONException e){
-                            modelSong.setArtist("Artist");
-                        }
-                        listpopuler.add(modelSong);
+        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                JSONArray jsonArray1=response.getJSONArray("collection");
+                for (int i = 0;i<jsonArray1.length();i++){
+                    JSONObject jsonObject1=jsonArray1.getJSONObject(i);
+                    JSONObject jsonObject=jsonObject1.getJSONObject("track");
+                    ModelSong modelSong = new ModelSong();
+                    modelSong.setId(jsonObject.getInt("id"));
+                    modelSong.setTitle(jsonObject.getString("title"));
+                    modelSong.setImageurl(jsonObject.getString("artwork_url"));
+                    modelSong.setDuration(jsonObject.getString("full_duration"));
+                    modelSong.setType("online");
+                    try {
+                        JSONObject jsonArray3=jsonObject.getJSONObject("publisher_metadata");
+                        modelSong.setArtist(jsonArray3.getString("artist"));
                     }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    catch (JSONException e){
+                        modelSong.setArtist("Artist");
+                    }
+                    listpopuler.add(modelSong);
                 }
-                populerAdapter.notifyDataSetChanged();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
+            populerAdapter.notifyDataSetChanged();
+        }, error -> {
         });
 
         Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
